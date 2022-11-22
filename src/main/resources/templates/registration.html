@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MyTwitter. Sign Up.</title>
+</head>
+<body>
+    <div class="form">
+        <h1>Registration</h1>
+        <form th:action="@{/registration}" method="post" th:object="${user}">
+            <input type="text" name="email" placeholder="Email" id="email">
+            <input type="password" name="password" placeholder="Password" id="password1">
+            <input type="password" name="password" placeholder="Password" id="password2">
+            <input type="submit" value="Sign Up">
+        </form>
+        <p>Already have an account? Click <a th:ref="@{/authentication}">here</a> to sign in.</p>
+    </div>
+</body>
+</html>
