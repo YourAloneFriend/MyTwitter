@@ -1,24 +1,27 @@
 package com.mytwitter.entity;
 
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 @Getter
 @Setter
+@ToString(exclude = {"roles"})
 @Entity
 @Table(uniqueConstraints = {
         @UniqueConstraint(name = "login_unique", columnNames = {"login"}),
         @UniqueConstraint(name = "email_unique", columnNames = {"email"})})
-public class User {
+public class User implements UserDetails{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter(AccessLevel.PRIVATE)
     @Column(nullable = false)
     private String login;
 
@@ -31,6 +34,7 @@ public class User {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @Getter(AccessLevel.PRIVATE)
     @Setter(AccessLevel.PRIVATE)
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "user_roles",
@@ -48,5 +52,35 @@ public class User {
         this.email = email;
         this.password = password;
         this.roles = roles;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles;
+    }
+
+    @Override
+    public String getUsername() {
+        return login;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

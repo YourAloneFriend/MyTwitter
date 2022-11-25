@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -20,10 +19,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
+    @Autowired
+    private AuthProvider authProvider;
 
     @Bean
     public AuthenticationManager authManager(HttpSecurity http, PasswordEncoder passwordEncoder, UserDetailsService userDetailService)
@@ -32,6 +29,7 @@ public class SecurityConfig {
                 .userDetailsService(userDetailService)
                 .passwordEncoder(passwordEncoder)
                 .and()
+                .authenticationProvider(authProvider)
                 .build();
     }
 
@@ -39,15 +37,15 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         return http
                 .authorizeRequests()
-                .antMatchers("/moderator").hasRole(Roles.MODERATOR.getRoleName())
-                .antMatchers("/home").hasRole(Roles.USER.getRoleName())
+                .antMatchers("/moderator").hasAuthority(Roles.MODERATOR.getRoleName())
+                .antMatchers("/home").hasAuthority(Roles.USER.getRoleName())
                 .antMatchers("/", "/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
                 .formLogin()
                 .loginPage("/authentication")
-                .defaultSuccessUrl("/")
+                .defaultSuccessUrl("/home")
                 .and().logout().logoutSuccessUrl("/")
                 .and().build();
     }
