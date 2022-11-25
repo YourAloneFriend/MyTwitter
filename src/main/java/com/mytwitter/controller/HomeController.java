@@ -3,7 +3,7 @@ package com.mytwitter.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-@Controller("/")
+@Controller
 public class HomeController {
 
     @GetMapping
@@ -11,7 +11,7 @@ public class HomeController {
         return "main";
     }
 
-    @GetMapping
+    @GetMapping("/home")
     public String home(){ return "home"; }
 
     @GetMapping("/authentication")
